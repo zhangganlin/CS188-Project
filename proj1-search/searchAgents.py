@@ -315,20 +315,6 @@ class CornersProblem(search.SearchProblem):
             state, 'action' is the action required to get there, and 'stepCost'
             is the incremental cost of expanding to that successor
         """
-
-        # successors = []
-        # for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-        #     # Add a successor state to the successor list if the action is legal
-        #     # Here's a code snippet for figuring out whether a new position hits a wall:
-        #     #   x,y = currentPosition
-        #     #   dx, dy = Actions.directionToVector(action)
-        #     #   nextx, nexty = int(x + dx), int(y + dy)
-        #     #   hitsWall = self.walls[nextx][nexty]
-        #
-        #     "*** YOUR CODE HERE ***"
-        #
-        # self._expanded += 1 # DO NOT CHANGE
-        # return successors
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             x,y = state[0]
@@ -381,7 +367,17 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    distanceToCorners = []
+    flag =[ state[1],state[2],state[3],state[4]]
+    for i in range(4):
+        if flag[i] == False:
+            xy1=corners[i]
+            xy2=state[0]
+            distance = abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+            distanceToCorners.append(distance)
+    if len(distanceToCorners)==0:
+        return 0
+    return max(distanceToCorners)# Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
