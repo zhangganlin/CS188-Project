@@ -90,11 +90,6 @@ def depthFirstSearch(problem):
     # print("Start:", problem.getStartState())
     # print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     # print("Start's successors:", problem.getSuccessors(problem.getStartState()))
-    from game import Directions
-    s = Directions.SOUTH
-    w = Directions.WEST
-    e = Directions.EAST
-    n = Directions.NORTH
     current = [problem.getStartState(),0]
     fringe = util.Stack()
     visited = util.Stack()
@@ -114,24 +109,34 @@ def depthFirstSearch(problem):
         route.append(visited.list[i][2])
         i=visited.list[i][1]
     route.reverse()
-    plan=[]
-    # for i in range(len(route)-1):
-    #     print (problem)
-    #     if (route[i][0]-route[i+1][0]==1) and (route[i][1]-route[i+1][1]==0):
-    #         plan.append(w)
-    #     elif (route[i][0]-route[i+1][0]==-1) and (route[i][1]-route[i+1][1]==0):
-    #         plan.append(e)
-    #     elif (route[i][0]-route[i+1][0]==0) and (route[i][1]-route[i+1][1]==1):
-    #         plan.append(s)
-    #     elif (route[i][0]-route[i+1][0]==0) and (route[i][1]-route[i+1][1]==-1):
-    #         plan.append(n)
+
     return route
 
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    current = [problem.getStartState(),0]
+    fringe = util.Queue()
+    visited = util.Stack()
+    current = (problem.getStartState(),0)
+    visited.push(current)
+    while (problem.isGoalState(current[0])==False):
+        for state,direction,_ in problem.getSuccessors(current[0]):
+            parentIndex=len(visited.list)-1
+            fringe.push([state,parentIndex,direction])
+        current = fringe.pop()
+        while (current[0] in [i[0] for i in visited.list]):
+            current = fringe.pop()
+        visited.push(current)
+    route=[]
+    [finalState,i,finalDirection] = visited.list[-1]
+    route.append(finalDirection)
+    while (i!=0):
+        route.append(visited.list[i][2])
+        i=visited.list[i][1]
+    route.reverse()
+    return route
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
