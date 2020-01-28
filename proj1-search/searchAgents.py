@@ -376,7 +376,7 @@ def cornersHeuristic(state, problem):
             distance = abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
             distanceToCorners.append(distance)
     if len(distanceToCorners)==0:
-        return 0
+        return 0 
     return max(distanceToCorners)# Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
