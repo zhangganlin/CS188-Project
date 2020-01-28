@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -87,7 +87,49 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    print("Start:", problem.getStartState())
+    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+    from game import Directions
+    #while(1):continue
+    s = Directions.SOUTH
+    w = Directions.WEST
+    e = Directions.EAST
+    n = Directions.NORTH
+    current = [problem.getStartState(),0]
+    fringe = util.Stack()
+    visited = util.Stack()
+    visited.push(current)
+    while (problem.isGoalState(current[0])==False):
+        for state,_,_ in problem.getSuccessors(current[0]):
+            parentIndex=len(visited.list)-1
+            fringe.push([state,parentIndex])
+        current = fringe.pop()
+        while (current[0] in [i[0] for i in visited.list]):
+            current = fringe.pop()
+        visited.push(current)
+    route=[]
+    [finalState,i] = visited.list[-1]
+    route.append(finalState)
+    while (i!=0):
+        route.append(visited.list[i][0])
+        i=visited.list[i][1]
+    route.append(visited.list[0][0])
+    route.reverse()
+    plan=[]
+    for i in range(len(route)-1):
+        if (route[i][0]-route[i+1][0]==1) and (route[i][1]-route[i+1][1]==0):
+            plan.append(w)
+        elif (route[i][0]-route[i+1][0]==-1) and (route[i][1]-route[i+1][1]==0):
+            plan.append(e)
+        elif (route[i][0]-route[i+1][0]==0) and (route[i][1]-route[i+1][1]==1):
+            plan.append(s)
+        elif (route[i][0]-route[i+1][0]==0) and (route[i][1]-route[i+1][1]==-1):
+            plan.append(n)
+    print (route)
+    print (plan)
+    return plan
+
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
