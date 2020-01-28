@@ -87,11 +87,10 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+    # print("Start:", problem.getStartState())
+    # print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    # print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     from game import Directions
-    #while(1):continue
     s = Directions.SOUTH
     w = Directions.WEST
     e = Directions.EAST
@@ -126,8 +125,6 @@ def depthFirstSearch(problem):
             plan.append(s)
         elif (route[i][0]-route[i+1][0]==0) and (route[i][1]-route[i+1][1]==-1):
             plan.append(n)
-    print (route)
-    print (plan)
     return plan
 
 
