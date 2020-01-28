@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -295,14 +295,15 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return [self.startingPosition,False,False,False,False]
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        [_,flag1,flag2,flag3,flag4] = state
+        return flag1&flag2&flag3&flag4
 
     def getSuccessors(self, state):
         """
@@ -315,18 +316,38 @@ class CornersProblem(search.SearchProblem):
             is the incremental cost of expanding to that successor
         """
 
+        # successors = []
+        # for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
+        #     # Add a successor state to the successor list if the action is legal
+        #     # Here's a code snippet for figuring out whether a new position hits a wall:
+        #     #   x,y = currentPosition
+        #     #   dx, dy = Actions.directionToVector(action)
+        #     #   nextx, nexty = int(x + dx), int(y + dy)
+        #     #   hitsWall = self.walls[nextx][nexty]
+        #
+        #     "*** YOUR CODE HERE ***"
+        #
+        # self._expanded += 1 # DO NOT CHANGE
+        # return successors
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-            # Add a successor state to the successor list if the action is legal
-            # Here's a code snippet for figuring out whether a new position hits a wall:
-            #   x,y = currentPosition
-            #   dx, dy = Actions.directionToVector(action)
-            #   nextx, nexty = int(x + dx), int(y + dy)
-            #   hitsWall = self.walls[nextx][nexty]
-
-            "*** YOUR CODE HERE ***"
+            x,y = state[0]
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            if not self.walls[nextx][nexty]:
+                nextState=[(nextx,nexty),state[1],state[2],state[3],state[4]]
+                if (nextx,nexty)==self.corners[0]:
+                    nextState = [(nextx, nexty),True,state[2],state[3],state[4]]
+                elif (nextx,nexty)==self.corners[1]:
+                    nextState = [(nextx, nexty),state[1],True,state[3],state[4]]
+                elif (nextx,nexty)==self.corners[2]:
+                    nextState = [(nextx, nexty),state[1],state[2],True,state[4]]
+                elif (nextx,nexty)==self.corners[3]:
+                    nextState = [(nextx, nexty),state[1],state[2],state[3],True]
+                successors.append( (nextState, action, 1) )
 
         self._expanded += 1 # DO NOT CHANGE
+
         return successors
 
     def getCostOfActions(self, actions):

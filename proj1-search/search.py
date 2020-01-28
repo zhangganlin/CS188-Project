@@ -90,77 +90,91 @@ def depthFirstSearch(problem):
     # print("Start:", problem.getStartState())
     # print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     # print("Start's successors:", problem.getSuccessors(problem.getStartState()))
-    current = [problem.getStartState(),0]
     fringe = util.Stack()
     visited = util.Stack()
-    visited.push(current)
-    while (problem.isGoalState(current[0])==False):
-        for state,direction,_ in problem.getSuccessors(current[0]):
-            parentIndex=len(visited.list)-1
-            fringe.push([state,parentIndex,direction])
-        current = fringe.pop()
-        while (current[0] in [i[0] for i in visited.list]):
-            current = fringe.pop()
-        visited.push(current)
-    route=[]
-    [finalState,i,finalDirection] = visited.list[-1]
-    route.append(finalDirection)
-    while (i!=0):
-        route.append(visited.list[i][2])
-        i=visited.list[i][1]
-    route.reverse()
-
-    return route
+    currentState = problem.getStartState()
+    direction = 0
+    parent = 0
+    fringe.push([currentState,direction,parent])
+    while (fringe.isEmpty() == False):
+        [currentState,direction,parent]=fringe.pop()
+        while (currentState in [ i[0] for i in visited.list ]):
+            [currentState,direction,parent]=fringe.pop()
+        visited.push([currentState,direction,parent])
+        if (problem.isGoalState(currentState)==True):
+            route = []
+            [_,direction,parent]=visited.list[-1]
+            route.append(direction)
+            while (parent!=0):
+                route.append(visited.list[parent][1])
+                parent=visited.list[parent][2]
+            route.reverse()
+            return route
+        for state in problem.getSuccessors(currentState):
+            parent = len(visited.list)-1
+            fringe.push([state[0],state[1],parent])
+    return []
 
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    current = [problem.getStartState(),0]
     fringe = util.Queue()
     visited = util.Stack()
-    visited.push(current)
-    while (problem.isGoalState(current[0])==False):
-        for state,direction,_ in problem.getSuccessors(current[0]):
-            parentIndex=len(visited.list)-1
-            fringe.push([state,parentIndex,direction])
-        current = fringe.pop()
-        while (current[0] in [i[0] for i in visited.list]):
-            current = fringe.pop()
-        visited.push(current)
-    route=[]
-    [finalState,i,finalDirection] = visited.list[-1]
-    route.append(finalDirection)
-    while (i!=0):
-        route.append(visited.list[i][2])
-        i=visited.list[i][1]
-    route.reverse()
-    return route
+    currentState = problem.getStartState()
+    direction = 0
+    parent = 0
+    fringe.push([currentState,direction,parent])
+    while (fringe.isEmpty() == False):
+        [currentState,direction,parent]=fringe.pop()
+        while (currentState in [ i[0] for i in visited.list ]):
+            [currentState,direction,parent]=fringe.pop()
+        visited.push([currentState,direction,parent])
+        if (problem.isGoalState(currentState)==True):
+            route = []
+            [_,direction,parent]=visited.list[-1]
+            route.append(direction)
+            while (parent!=0):
+                route.append(visited.list[parent][1])
+                parent=visited.list[parent][2]
+            route.reverse()
+            return route
+        for state in problem.getSuccessors(currentState):
+            parent = len(visited.list)-1
+            fringe.push([state[0],state[1],parent])
+    return []
+
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    current = [problem.getStartState(),0,0,0]
     fringe = util.PriorityQueue()
     visited = util.Stack()
-    visited.push(current)
-    while (problem.isGoalState(current[0])==False):
-        for state,direction,cost in problem.getSuccessors(current[0]):
-            parentIndex=len(visited.list)-1
-            totalCost = cost + current[3]
-            fringe.push([state,parentIndex,direction,totalCost],totalCost)
-        current = fringe.pop()
-        while (current[0] in [i[0] for i in visited.list]):
-            current = fringe.pop()
-        visited.push(current)
-    route=[]
-    [finalState,i,finalDirection,_] = visited.list[-1]
-    route.append(finalDirection)
-    while (i!=0):
-        route.append(visited.list[i][2])
-        i=visited.list[i][1]
-    route.reverse()
-    return route
+    currentState = problem.getStartState()
+    direction = 0
+    parent = 0
+    cost = 0
+    fringe.push([currentState,direction,parent,cost],cost)
+    while (fringe.isEmpty() == False):
+        [currentState,direction,parent,cost]=fringe.pop()
+        while (currentState in [ i[0] for i in visited.list ]):
+            [currentState,direction,parent,cost]=fringe.pop()
+        visited.push([currentState,direction,parent,cost])
+        if (problem.isGoalState(currentState)==True):
+            route = []
+            [_,direction,parent,_]=visited.list[-1]
+            route.append(direction)
+            while (parent!=0):
+                route.append(visited.list[parent][1])
+                parent=visited.list[parent][2]
+            route.reverse()
+            return route
+        for state in problem.getSuccessors(currentState):
+            parent = len(visited.list)-1
+            cost = visited.list[parent][3]
+            fringe.push([state[0],state[1],parent,state[2]+cost],state[2]+cost)
+    return []
+
 
 def nullHeuristic(state, problem=None):
     """
@@ -172,28 +186,33 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    current = [problem.getStartState(),0,0,0]
     fringe = util.PriorityQueue()
     visited = util.Stack()
-    visited.push(current)
-    while (problem.isGoalState(current[0])==False):
-        for state,direction,cost in problem.getSuccessors(current[0]):
-            parentIndex=len(visited.list)-1
-            totalCost = cost + current[3]
-            predictCost = totalCost+ heuristic(state,problem)
-            fringe.push([state,parentIndex,direction,totalCost],predictCost)
-        current = fringe.pop()
-        while (current[0] in [i[0] for i in visited.list]):
-            current = fringe.pop()
-        visited.push(current)
-    route=[]
-    [finalState,i,finalDirection,_] = visited.list[-1]
-    route.append(finalDirection)
-    while (i!=0):
-        route.append(visited.list[i][2])
-        i=visited.list[i][1]
-    route.reverse()
-    return route
+    currentState = problem.getStartState()
+    direction = 0
+    parent = 0
+    cost = 0
+    fringe.push([currentState,direction,parent,cost],cost)
+    while (fringe.isEmpty() == False):
+        [currentState,direction,parent,cost]=fringe.pop()
+        while (currentState in [ i[0] for i in visited.list ]):
+            [currentState,direction,parent,cost]=fringe.pop()
+        visited.push([currentState,direction,parent,cost])
+        if (problem.isGoalState(currentState)==True):
+            route = []
+            [_,direction,parent,_]=visited.list[-1]
+            route.append(direction)
+            while (parent!=0):
+                route.append(visited.list[parent][1])
+                parent=visited.list[parent][2]
+            route.reverse()
+            return route
+        for state in problem.getSuccessors(currentState):
+            parent = len(visited.list)-1
+            cost = visited.list[parent][3]
+            predictCost = state[2]+cost+ heuristic(state[0],problem)
+            fringe.push([state[0],state[1],parent,state[2]+cost],predictCost)
+    return []
 
 
 # Abbreviations
