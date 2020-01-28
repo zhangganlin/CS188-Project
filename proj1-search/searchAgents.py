@@ -376,7 +376,7 @@ def cornersHeuristic(state, problem):
             distance = abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
             distanceToCorners.append(distance)
     if len(distanceToCorners)==0:
-        return 0 
+        return 0
     return max(distanceToCorners)# Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
@@ -470,9 +470,25 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
-    "*** YOUR CODE HERE ***"
-    return 0
+    distance = []
+    for i in range(foodGrid.width):
+        for j in range(foodGrid.height):
+            if foodGrid.data[i][j]:
+                xy1=(i,j)
+                xy2=position
+                distance.append(mazeDistance(xy1,xy2,problem.startingGameState))
 
+    if len(distance)==0:
+        return 0
+    else:
+        return max(distance)
+
+
+    # distances=[0]
+    # if foodGrid.asList():
+    #     for food in foodGrid.asList():
+    #         distances.append(mazeDistance(position,food,problem.startingGameState))
+    # return max(distances)
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
     def registerInitialState(self, state):
