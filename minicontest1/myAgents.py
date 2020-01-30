@@ -57,24 +57,36 @@ search.py and searchProblems.py. (ClosestDotAgent as an example below)
 """
 
 class ClosestDotAgent(Agent):
-
+    def initialize(self):
+        self.plan=[]
+        self.i = 0
+        self.flag = 0
     def findPathToClosestDot(self, gameState):
         """
         Returns a path (a list of actions) to the closest dot, starting from
         gameState.
         """
         # Here are some useful elements of the startState
-        startPosition = gameState.getPacmanPosition(self.index)
-        food = gameState.getFood()
-        walls = gameState.getWalls()
+        # startPosition = gameState.getPacmanPosition(self.index)
+        # food = gameState.getFood()
+        # walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState, self.index)
 
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return search.aStarSearch(problem)
 
     def getAction(self, state):
-        return self.findPathToClosestDot(state)[0]
+        if self.i == len(self.plan) :
+            problem = AnyFoodSearchProblem(state,self.index,self.flag)
+            self.plan = search.aStarSearch(problem)
+            self.flag = 1
+            self.i = 1
+            return self.plan[self.i-1]
+        else:
+            self.i +=1
+            return self.plan[self.i-1]
+        # return self.findPathToClosestDot(state)[0]
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -91,7 +103,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
     method.
     """
 
-    def __init__(self, gameState, agentIndex):
+    def __init__(self, gameState, agentIndex,flag):
         "Stores information from the gameState.  You don't need to change this."
         # Store the food for later reference
         self.food = gameState.getFood()
@@ -101,14 +113,25 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         self.startState = gameState.getPacmanPosition(agentIndex)
         self.costFn = lambda x: 1
         self._visited, self._visitedlist, self._expanded = {}, [], 0 # DO NOT CHANGE
-
+        self.foodnum=0
+        self.index = agentIndex
+        self.flag = flag
     def isGoalState(self, state):
         """
         The state is Pacman's position. Fill this in with a goal test that will
         complete the problem definition.
         """
         x,y = state
-
+        if self.flag ==0:
+            if (self.food[x][y]==True):
+                self.foodnum+=1
+            if (self.foodnum ==1 and self.index%4==0)\
+            or(self.foodnum==3 and self.index%4 == 1)\
+            or(self.foodnum==1 and self.index%4 ==2)\
+            or(self.foodnum==5 and self.index%4 ==3):
+                self.foodnum=0
+                return True
+            return False
+        else:
+            return self.food[x][y]
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
-
