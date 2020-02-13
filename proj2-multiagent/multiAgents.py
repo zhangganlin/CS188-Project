@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -43,6 +43,8 @@ class ReflexAgent(Agent):
 
         # Choose one of the best actions
         scores = [self.evaluationFunction(gameState, action) for action in legalMoves]
+        print(legalMoves)
+        print(scores)
         bestScore = max(scores)
         bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
         chosenIndex = random.choice(bestIndices) # Pick randomly among the best
@@ -73,8 +75,38 @@ class ReflexAgent(Agent):
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
+        # print('------------------------------------------------')
+        # print (successorGameState)
+        # print(newPos)
+        # print(newFood)
+        # print(newGhostStates)
+        # print(newScaredTimes)
+        # print('------------------------------------------------\n')
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        if action == "Stop":
+            stopScore = -20
+        else:
+            stopScore = 0
+        currPos = currentGameState.getPacmanPosition()
+        foodDistanceCurr = [manhattanDistance(currPos,foodPos) for foodPos in newFood.asList()]
+        foodDistanceNew = [manhattanDistance(newPos,foodPos) for foodPos in newFood.asList()]
+        GhostDistance = [manhattanDistance(newPos,ghostState.getPosition()) for ghostState in newGhostStates]
+        minGhostDistance = min(GhostDistance)
+        if (len(newFood.asList())==0):
+            foodNearScore = 0
+        elif (-min(foodDistanceCurr)+min(foodDistanceNew)) != 0 :
+            foodNearScore = 10/(min(foodDistanceCurr)+min(foodDistanceNew))
+        else:
+            foodNearScore = 0
+
+        if minGhostDistance == 0:
+            ghostNearScore = -100000000000000000
+        elif minGhostDistance>5:
+            ghostNearScore =0
+        else:
+            ghostNearScore = -5/minGhostDistance
+        print(foodNearScore)
+        return successorGameState.getScore()+ghostNearScore+stopScore + foodNearScore
 
 def scoreEvaluationFunction(currentGameState):
     """
