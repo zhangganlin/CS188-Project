@@ -271,7 +271,36 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
     """
       Your expectimax agent (question 4)
     """
+    def maxValue(self,gameState,depth):
+        v = float('-inf')
+        legalMoves = gameState.getLegalActions(0)
+        for action in legalMoves:
+            nextState = gameState.generateSuccessor(0,action)
+            v = max(v,self.value(nextState,depth,1))
+        return v
 
+    def meanValue(self,gameState,depth,ghostIndex):
+        v=float('inf')
+        legalMoves = gameState.getLegalActions(ghostIndex)
+        nextAgentIndex = (ghostIndex+1)%gameState.getNumAgents()
+        nextDepth = depth
+        if nextAgentIndex == 0:
+            nextDepth = depth +1
+        total = 0
+        for action in legalMoves:
+            nextState = gameState.generateSuccessor(ghostIndex,action)
+            total += self.value(nextState,nextDepth,nextAgentIndex)
+        return total/len(legalMoves)
+
+    def value(self,gameState,depth,agentIndex):
+        if gameState.isWin() or gameState.isLose():
+            return self.evaluationFunction(gameState)
+        if depth== self.depth:
+            return self.evaluationFunction(gameState)
+        if agentIndex == 0:
+            return self.maxValue(gameState,depth)
+        else:
+            return self.meanValue(gameState,depth,agentIndex)
     def getAction(self, gameState):
         """
         Returns the expectimax action using self.depth and self.evaluationFunction
@@ -280,7 +309,16 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        legalMoves = gameState.getLegalActions()
+        scores = []
+        for action in legalMoves:
+            newState = gameState.generateSuccessor(0,action)
+            v = self.value(newState,depth = 0, agentIndex = 1)
+            scores.append(v)
+        bestScore = max(scores)
+        bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
+        chosenIndex = random.choice(bestIndices) # Pick randomly among the best
+        return legalMoves[chosenIndex]
 
 def betterEvaluationFunction(currentGameState):
     """
