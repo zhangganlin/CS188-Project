@@ -213,13 +213,59 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     """
     Your minimax agent with alpha-beta pruning (question 3)
     """
+    def maxValue(self,gameState,depth,alpha,beta):
+        v = ('sth',float('-inf'))
+        legalMoves = gameState.getLegalActions(0)
+        for action in legalMoves:
+            nextState = gameState.generateSuccessor(0,action)
+            v_1 = max(v[1],self.value(nextState,depth,1,alpha,beta)[1])
+            if v_1 is not v[1]:
+                v = (action,v_1)
+            if v[1] > beta:
+                return v
+            alpha = max(alpha,v[1])
+        return v
+
+    def minValue(self,gameState,depth,ghostIndex,alpha,beta):
+        v=('sth',float('inf'))
+        legalMoves = gameState.getLegalActions(ghostIndex)
+        nextAgentIndex = (ghostIndex+1)%gameState.getNumAgents()
+        nextDepth = depth
+        if nextAgentIndex == 0:
+            nextDepth = depth +1
+        for action in legalMoves:
+            nextState = gameState.generateSuccessor(ghostIndex,action)
+            v_1 = min(v[1],self.value(nextState,nextDepth,nextAgentIndex,alpha,beta)[1])
+            if v_1 is not v[1]:
+                v=(action,v_1)
+            if v[1] < alpha:
+                return v
+            beta = min(beta,v[1])
+        return v
+
+    def value(self,gameState,depth,agentIndex,alpha,beta):
+        if gameState.isWin() or gameState.isLose():
+            return ('sth',self.evaluationFunction(gameState))
+        if depth== self.depth:
+            return ('sth',self.evaluationFunction(gameState))
+        if agentIndex == 0:
+            return self.maxValue(gameState,depth,alpha,beta)
+        else:
+            return self.minValue(gameState,depth,agentIndex,alpha,beta)
 
     def getAction(self, gameState):
         """
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        legalMoves = gameState.getLegalActions()
+        scores = []
+        alpha = float('-inf')
+        beta = float('inf')
+        val = self.value(gameState,0,0,alpha,beta)
+
+        return val[0]
+
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
